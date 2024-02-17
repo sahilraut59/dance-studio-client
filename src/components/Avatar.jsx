@@ -9,12 +9,14 @@ import { useControls } from "leva";
 import { SkeletonUtils } from "three-stdlib";
 import { useAtom } from "jotai";
 import { charactersAtom } from "./SocketManager";
+import { socket } from "./SocketManager";
 
 export function Avatar({ r, g, b, ...props }) {
   const [characters] = useAtom(charactersAtom);
+  console.log(props.animation);
   const { animation } = useControls({
     animation: {
-      value: "Twerk",
+      value: props.animation,
       options: ["Thriller", "Twerk"],
     },
   });
@@ -24,7 +26,7 @@ export function Avatar({ r, g, b, ...props }) {
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 
   const myMaterial = materials.Wolf3D_Outfit_Top.clone();
-  console.log(myMaterial);
+
   myMaterial.color.r = r;
   myMaterial.color.g = g;
   myMaterial.color.b = b;
@@ -37,7 +39,6 @@ export function Avatar({ r, g, b, ...props }) {
   const { animations: twerkAnimation } = useFBX("/animations/twerk.fbx");
   thrillerAnimation[0].name = "Thriller";
   twerkAnimation[0].name = "Twerk";
-  
 
   const { actions } = useAnimations(
     [thrillerAnimation[0], twerkAnimation[0]],
@@ -46,18 +47,27 @@ export function Avatar({ r, g, b, ...props }) {
   // const [animation, setAnimation] = useState("Twerk");
 
   useEffect(() => {
-    actions[animation].reset().play();
+    actions[props.animation].reset().play();
     return () => {
       actions[animation]?.fadeOut(0.5);
     };
   }, [animation, characters]);
 
-  useFrame((state, delta) => {
-    if (animation === "Twerk") {
-      group.current.rotation.y += delta;
-      // console.log(group);
-    }
-  });
+  useEffect(() => {
+    characters.map((character) => {
+      if (character.id === socket.id) {
+        character.animation = animation;
+      }
+    });
+    socket.emit("animationChanged", characters);
+  }, [animation]);
+
+  // useFrame((state, delta) => {
+  //   if (animation === "Twerk") {
+  //     group.current.rotation.y += delta;
+  //     // console.log(group);
+  //   }
+  // });
   return (
     <group {...props} dispose={null} ref={group}>
       <group rotation-x={-Math.PI / 2}>

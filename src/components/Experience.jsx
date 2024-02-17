@@ -1,7 +1,7 @@
 import React from "react";
 import Wall from "./Wall";
 import Floor from "./Floor";
-import * as THREE from "three"
+import * as THREE from "three";
 
 import { Avatar } from "./Avatar";
 import { OrbitControls } from "@react-three/drei";
@@ -10,7 +10,7 @@ import { charactersAtom } from "./SocketManager";
 
 const Experience = () => {
   const [characters] = useAtom(charactersAtom);
-  
+
   // function generateRandomRGB() {
   //   const min = 0; // Minimum RGB value
   //   const max = 5; // Maximum RGB value
@@ -29,7 +29,14 @@ const Experience = () => {
       {characters.map((character) => (
         <Avatar
           key={character.id}
-          position={new THREE.Vector3(character.position[0],character.position[1],character.position[2])}
+          position={
+            new THREE.Vector3(
+              character.position[0],
+              character.position[1],
+              character.position[2]
+            )
+          }
+          animation={character.animation}
           r={character.r}
           g={character.g}
           b={character.b}

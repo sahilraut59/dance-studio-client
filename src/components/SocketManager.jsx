@@ -1,7 +1,7 @@
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
-export const socket = io("https://dance-studio-backend-9ae513cc2366.herokuapp.com/");
+export const socket = io("http://localhost:3001");
 export const charactersAtom = atom([]);
 export const SocketManager = () => {
   const [_characters, setCharacters] = useAtom(charactersAtom);
